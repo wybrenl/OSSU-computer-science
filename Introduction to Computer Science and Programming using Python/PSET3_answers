@@ -27,7 +27,7 @@ def getGuessedWord(secretWord, lettersGuessed):
         if letter not in lettersGuessed:
             current += '_'
     return current
-    
+
 def getAvailableLetters(lettersGuessed):
     '''
     lettersGuessed: list, what letters have been guessed so far
@@ -43,23 +43,23 @@ def getAvailableLetters(lettersGuessed):
         else:
            options = options.replace(letter, '')
     return options
-    
+
 def hangman(secretWord):
     '''
     secretWord: string, the secret word to guess.
 
     Starts up an interactive game of Hangman.
 
-    * At the start of the game, let the user know how many 
+    * At the start of the game, let the user know how many
       letters the secretWord contains.
 
     * Ask the user to supply one guess (i.e. letter) per round.
 
-    * The user should receive feedback immediately after each guess 
+    * The user should receive feedback immediately after each guess
       about whether their guess appears in the computers word.
 
-    * After each round, you should also display to the user the 
-      partially guessed word so far, as well as letters that the 
+    * After each round, you should also display to the user the
+      partially guessed word so far, as well as letters that the
       user has not yet guessed.
 
     Follows the other limitations detailed in the problem write-up.
@@ -67,11 +67,11 @@ def hangman(secretWord):
     # FILL IN YOUR CODE HERE...
     print('Welcome to the game, Hangman!\n'
     'I am thinking of a word that is', len(secretWord), 'letters long\n'
-    '-----------') 
+    '-----------')
     guesses = 8
     lettersGuessed = []
-    while guesses > 0: 
-        print('You have', guesses, 'guesses left.') 
+    while guesses > 0:
+        print('You have', guesses, 'guesses left.')
         print('Available letters:', getAvailableLetters(lettersGuessed))
         inp = input('Please guess a letter: ')
         if inp in lettersGuessed:
@@ -89,8 +89,8 @@ def hangman(secretWord):
             elif inp in secretWord:
                 print('Good guess:', getGuessedWord(secretWord, lettersGuessed),'\n'
     '-----------')
-            else: 
+            else:
                 guesses -= 1
                 print('Oops! That letter is not in my word:', getGuessedWord(secretWord, lettersGuessed),'\n'
-    '-----------') 
+    '-----------')
     print('Sorry, you ran out of guesses. The word was', secretWord)
