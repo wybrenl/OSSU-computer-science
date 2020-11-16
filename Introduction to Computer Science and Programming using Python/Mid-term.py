@@ -1,5 +1,5 @@
 #randomnly selected questions from different people that posted mid-term question on their github
-#Some are similar, some are different, I think this is the case because the questions changed over the years
+#Not all the questions in the posts were the same, I think this is the case because the questions changed over the years
 
 # Problem 4
 # 10/10 points (graded)
