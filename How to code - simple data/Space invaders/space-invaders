@@ -16,7 +16,7 @@
 
 (define HIT-RANGE 30)
 
-(define INVADE-RATE 100)
+(define INVADE-RATE 10)   ; 1 in 10 chance that invader spawns on a tick
 
 (define BACKGROUND (empty-scene WIDTH HEIGHT))
 
@@ -166,13 +166,6 @@
     (stop-when stop-game)              ; GameState -> Boolean
     (on-key    handle-key)))           ; GameState KeyEvent -> GameState
 
-;; GameState -> GameState
-;; produce the next GameState
-;;  - advance the invaders
-;   - spawn new invaders
-;;  - advance the missiles
-;;  - move the tank
-
 ; ;; Possibilities for GameStates
 ; ;;  #   ALIEN-STATE            MISSILE STATE         GAMESTATE
 ; ;;  -0. (no alien)             (no missile)       -> no action 
@@ -207,9 +200,14 @@
 ; #;(check-expect (advance-game (make-game (make-invader 150 (+ HEIGHT 10) 10)   (cons (make-missile 150 300) empty)   (make-tank 50 1)))
 ;               (make-game empty empty (make-tank 50 1))) ;; need to implement game-over in different way later 
 
-              
+;; GameState -> GameState
+;; produce the next GameState by
+;;  - spawning new invaders (randomn process), removing hit invaders (based on missile and invader xy coordinate proximity) and advancing the invaders on screen (invader x and y speed variable)
+;;  - advancing fired missiles at MISSILE SPEED
+;;  - advancing the tank in dir-x t
+;; no check-expect due to randomnness of spawns
 
-; (define (advance-game s) s) ; stub
+;; (define (advance-game s) s) ; stub
 
 (define (advance-game s)
   (make-game (remove-hit-invaders (game-missiles s) (spawn-invaders (advance-invaders (game-invaders s))))
@@ -270,11 +268,11 @@
 ;; ListOfInvader -> ListOfInvader
 ;; produces new list of invaders that advanced along the screen in xy direction
 (check-expect (advance-invaders empty) empty)
-(check-expect (advance-invaders (cons (make-invader 150 100 12) (cons (make-invader 200 300 12) empty)))
+(check-expect (advance-invaders (cons (make-invader 150 100 INVADER-X-SPEED) (cons (make-invader 200 300 INVADER-X-SPEED) empty)))
               (cons
-               (make-invader (+ 150 (* 12 INVADER-X-SPEED)) (+ 100 (* 12 INVADER-Y-SPEED)) 12)
+               (make-invader (+ 150 INVADER-X-SPEED) (+ 100 INVADER-Y-SPEED) INVADER-X-SPEED)
                (cons
-                (make-invader (+ 200 (* 12 INVADER-X-SPEED)) (+ 300 (* 12 INVADER-Y-SPEED)) 12)
+                (make-invader (+ 200 INVADER-X-SPEED) (+ 300 INVADER-Y-SPEED) INVADER-X-SPEED)
                 empty)))
 
 ; (define (advance-invaders loi) loi) ; stub
@@ -286,9 +284,9 @@
 
 ;; Invader -> Invader
 ;; produces next invader by advancing it along the screen
-(check-expect (advance-invader (make-invader 150 100 INVADER-X-SPEED)) (make-invader (+ 150 INVADER-X-SPEED) (+ 100 (* 12 INVADER-Y-SPEED)) 12)) 
-(check-expect (advance-invader (make-invader (- WIDTH 1) 100 12)) (make-invader WIDTH (+ 100 (* 12 INVADER-Y-SPEED)) 12))
-(check-expect (advance-invader (make-invader 1 100 12)) (make-invader 0 (+ 100 (* 12 INVADER-Y-SPEED)) 12))
+(check-expect (advance-invader (make-invader 150 100 INVADER-X-SPEED)) (make-invader (+ 150 INVADER-X-SPEED) (+ 100 INVADER-Y-SPEED) INVADER-X-SPEED))        ;invader moving left to right
+(check-expect (advance-invader (make-invader (- WIDTH 1) 100 INVADER-X-SPEED)) (make-invader WIDTH 100 (- INVADER-X-SPEED)))                                  ;invader at right edge
+(check-expect (advance-invader (make-invader 1 100 (- INVADER-X-SPEED))) (make-invader 0 100 (abs INVADER-X-SPEED)))                                                    ;invader at left edge
 
 ; (define (advance-invader invader) invader) ; stub
 
@@ -299,15 +297,16 @@
 
 ;; ListOfInvader -> ListOfInvader
 ;; adds new invaders to the existing list of invaders by spawning them at randomn x-coordinate at y=0
-(check-random (spawn-invaders empty) empty)
-(check-random (spawn-invaders empty) (list I1 I2))
-(check-random (spawn-invaders I1) I1)
-(check-random (spawn-invaders (list I1 I2)) (list I1 I2 I3))
+;; Don't know how to create a test for randomn number
+;(check-random (spawn-invaders empty) empty)                    
+;(check-random (spawn-invaders empty) (list I1 I2))
+;(check-random (spawn-invaders I1) I1)
+;(check-random (spawn-invaders (list I1 I2)) (list I1 I2 I3))
 
 ; (define (spawn-invaders loi) loi) ; stub
 
 (define (spawn-invaders loi)
-  (cond [(< (random 1000) INVADE-RATE) (cons (make-invader (random WIDTH) 0 INVADER-X-SPEED) loi)]                      
+  (cond [(< (random 100) INVADE-RATE) (cons (make-invader (random WIDTH) 0 INVADER-X-SPEED) loi)]                      
         [else loi]))
                   
 ;; ListofMissile -> ListOfMissile
@@ -334,10 +333,10 @@
 
 ;; TANK -> TANK
 ;; produces the next tank at certain x position and moving left or right
-(check-expect (advance-tank (make-tank 50  1)) (make-tank (+ 50 2) 2))     ; tank in center moving right         
-(check-expect (advance-tank (make-tank 50 -1)) (make-tank (- 50 2) -2))    ; tank in center moving left
-(check-expect (advance-tank (make-tank 0  -1)) (make-tank 0 -2))           ; tank at left edge, moving left
-(check-expect (advance-tank (make-tank WIDTH 1)) (make-tank WIDTH -2))      ; tank at right edge, moving right
+(check-expect (advance-tank (make-tank 50  1)) (make-tank (+ 50 1) 1))      ; tank in center moving right         
+(check-expect (advance-tank (make-tank 50 -1)) (make-tank (- 50 1) -1))     ; tank in center moving left
+(check-expect (advance-tank (make-tank 0  -1)) (make-tank 0 -1))            ; tank at left edge, moving left
+(check-expect (advance-tank (make-tank WIDTH 1)) (make-tank WIDTH 1))      ; tank at right edge, moving right
 
 ; (define (advance-tank t) t)
 
