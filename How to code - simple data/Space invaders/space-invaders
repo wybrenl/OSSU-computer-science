@@ -211,7 +211,7 @@
 
 (define (advance-game s)
   (make-game (remove-hit-invaders (game-missiles s) (spawn-invaders (advance-invaders (game-invaders s))))
-             (advance-missiles (game-missiles s))
+             (advance-missiles (game-missiles s)) ;potentially implement function to remove missiles that hit aliens from ListOfMissiles
              (advance-tank (game-tank s))))
 
 ;; ----------------------------------
