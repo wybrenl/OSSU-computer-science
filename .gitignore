@@ -1,6 +1,6 @@
 *~
-edX solutions/
-solution/
 *bak
-*DS_Store
+.DS_Store
 *xlsx
+solutions
+solution
