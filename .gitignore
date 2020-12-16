@@ -1,5 +1,5 @@
 *~
 edX solutions/
 *bak
-*.DS_Store
-*.xlsx
+*DS_Store
+*xlsx
