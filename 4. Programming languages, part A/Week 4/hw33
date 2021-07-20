@@ -1,0 +1,51 @@
+(*hw33*)
+
+(*Q1*)
+(* string list -> string list*)
+(* a string list that has only the strings in the argument that start with an uppercase letter *)
+
+fun only_capitals stringlist =
+    filter(fn x => Char.isUpper(String.sub(x,0)), stringlist);
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)
+
+(**)
+(**)
+(**)

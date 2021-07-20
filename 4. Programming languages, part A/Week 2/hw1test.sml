@@ -8,7 +8,6 @@ val date1 = (1990, 12, 29);
 val date2 = (2000, 12, 20);
 val date3 = (1989, 11, 13);
 
-
 val test1_1 = is_older(date1, date2) = true;
 val test1_2 = is_older(date1, date3) = false;
 val test1_3 = is_older(date1, date1) = false;
@@ -21,6 +20,7 @@ val test3_1 = number_in_months ([(2012,2,28),(2013,12,1),(2011,3,31),(2011,4,28)
 val test3_2 = number_in_months ([(2012,2,28),(2013,12,1),(2011,3,31),(2011,4,28)],[2])     = 1
 val test3_3 = number_in_months ([(2012,2,28),(2013,12,1),(2011,3,31),(2011,4,28)],[9])     = 0
 val test3_4 = number_in_months ([(2012,2,28),(2013,12,1),(2011,3,31),(2011,4,28)],[])      = 0
+
 
 val test4_1 = dates_in_month ([(2012,2,28),(2013,12,1)],2) = [(2012,2,28)]
 val test4_2 = dates_in_month ([(2012,2,28),(2013,2,2)], 2) = [(2012,2,28),(2013,2,2)]
@@ -37,6 +37,7 @@ val test6_1 = get_nth (["hi", "there", "how", "are", "you"], 2) = "there"
 val test6_2 = get_nth (["hi", "there", "how", "are", "you"], 3) = "how"
 val test6_3 = get_nth (["hi", "there", "how", "are", "you"], 5) = "you"
 
+
 val test7_1 = date_to_string (2013, 6, 1) = "June 1, 2013"
 val test7_2 = date_to_string (1990, 12, 29) = "December 29, 1990"
 
@@ -44,9 +45,10 @@ val test8_1 = number_before_reaching_sum (0, [1,2,3,4,5]) = 0
 val test8_2 = number_before_reaching_sum (5, [1,2,3,4,5]) = 2
 val test8_3 = number_before_reaching_sum (10, [1,2,3,4,5]) = 3
 
-val test9_1 = what_month 70 = 3
 
+val test9_1 = what_month 70 = 3
 
 val test10_1 = month_range (31, 34) = [1,2,2,2]
 
 val test11 = oldest([(2012,2,28),(2011,3,31),(2011,4,28)]) = SOME (2011,3,31)
+

@@ -3,7 +3,7 @@
 (* To run the test, add a new line to the top of this file: use "homeworkname.sml"; *)
 (* All the tests should evaluate to true. For example, the REPL should say: val test1 = true : bool *)
 
-use "hw2.sml";
+use "hw22.sml";
 
 val test1_1 = all_except_option ("string", ["string"]) = SOME []
 val test1_2 = all_except_option ("string", ["string","thing"]) = SOME ["thing"]
@@ -27,11 +27,11 @@ val test4 = similar_names ([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie"
 	    [{first="Fred", last="Smith", middle="W"}, {first="Fredrick", last="Smith", middle="W"},
 	     {first="Freddie", last="Smith", middle="W"}, {first="F", last="Smith", middle="W"}]
 
-
 val test5_1 = card_color (Clubs, Num 2) = Black
 val test5_2 = card_color (Spades, Num 2) = Black
 val test5_3 = card_color (Diamonds, Num 2) = Red
 val test5_4 = card_color (Hearts, Num 2) = Red
+
 
 val test6_1 = card_value (Clubs, Ace) = 11
 val test6_2 = card_value (Clubs, Jack) = 10

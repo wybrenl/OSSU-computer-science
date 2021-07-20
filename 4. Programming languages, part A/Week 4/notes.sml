@@ -26,7 +26,6 @@ fun triple_n_times (n,x) =
         fun triple x = 3* x
     in
         n_times(triple,n,x)
-    end
 
 fun triple_n_times_let_lame (n,x) =
     n_times (let fun triple x = x * 3 in triple end,n,x)
@@ -261,3 +260,6 @@ val pairwithone = List.map (fn x => (x,1));
 fun curry f x y = f (x,y);
 fun uncurry f (x,y) = f x y;
 fun other_curry f x y = f y x;
+
+(*http://www.standardml.org/Basics/manpages.html*)
+(*list structure link*)

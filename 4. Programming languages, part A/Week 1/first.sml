@@ -1,5 +1,6 @@
 (* This is a comment. This is our first program. *)
 
+val x = 34;
 
 val x = 34; (* int *)
 (* dynamic environment: x --> 34 *)
