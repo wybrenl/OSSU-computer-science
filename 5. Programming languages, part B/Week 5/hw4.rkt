@@ -1,60 +1,145 @@
+
 #lang racket
-;; Programming Languages Homework4 Simple Test
-;; Save this file to the same directory as your homework file
-;; These are basic tests. Passing these tests does not guarantee that your code will pass the actual homework grader
 
-;; Be sure to put your homework file in the same folder as this test file.
-;; Uncomment the line below and change HOMEWORK_FILE to the name of your homework file.
-(require "hw4_test.rkt")
+(provide (all-defined-out)) ;; so we can put tests in a second file
 
-(require rackunit)
+;; put your code below
 
-;; Helper functions
-(define ones (lambda () (cons 1 ones)))
-(define a 2)
+;;Q1
+;; int * int * int -> int list
+;; produces a list of numbers from low to high (including low and possibly high) seperated by stride and in sorted order
 
-(define tests
-  (test-suite
-   "Sample tests for Assignment 4"
-   
-   ; sequence test
-   (check-equal? (sequence 0 5 1) (list 0 1 2 3 4 5) "Sequence test")
+              
+(define (sequence low high stride)
+  (if (> low high)
+      null
+      (cons low (sequence (+ low stride) high stride))))
 
-   ; string-append-map test
-   (check-equal? (string-append-map 
-                  (list "dan" "dog" "curry" "dog2") 
-                  ".jpg") '("dan.jpg" "dog.jpg" "curry.jpg" "dog2.jpg") "string-append-map test")
-   
-   ; list-nth-mod test
-   (check-equal? (list-nth-mod (list 0 1 2 3 4) 2) 2 "list-nth-mod test")
-   
-   ; stream-for-n-steps test
-   (check-equal? (stream-for-n-steps ones 2) (list 1 1) "stream-for-n-steps test")
-   
-   ; funny-number-stream test
-   (check-equal? (stream-for-n-steps funny-number-stream 16) (list 1 2 3 4 -5 6 7 8 9 -10 11 12 13 14 -15 16) "funny-number-stream test")
-   
-   ; dan-then-dog test
-   (check-equal? (stream-for-n-steps dan-then-dog 1) (list "dan.jpg") "dan-then-dog test")
-   
-   ; stream-add-zero test
-   (check-equal? (stream-for-n-steps (stream-add-zero ones) 1) (list (cons 0 1)) "stream-add-zero test")
-   
-   ; cycle-lists test
-   (check-equal? (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" "b")) 3) (list (cons 1 "a") (cons 2 "b") (cons 3 "a")) 
-                 "cycle-lists test")
-   
-   ; vector-assoc test
-   (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
-   
-   ; cached-assoc tests
-   (check-equal? ((cached-assoc (list (cons 1 2) (cons 3 4)) 3) 3) (cons 3 4) "cached-assoc test")
-   
-   ; while-less test
-   ;(check-equal? (while-less 7 do (begin (set! a (+ a 1)) a)) #t "while-less test")
-   
-   ))
+;;Q2
+;; string list * string -> string list
+;; produces a string list with the suffix appended to each string in the original string list
 
-(require rackunit/text-ui)
-;; runs the test
-(run-tests tests)
+
+(define (string-append-map xs suffix)
+  (map (lambda (x) (string-append x suffix)) xs))
+
+
+;;Q3
+;; 'a list * int -> 'a
+;; produces error for negative number and empty list, else returns ith element from the list
+
+(define (list-nth-mod xs n)
+  (cond [(< n 0)(error "list-nth-mod: negative number")]
+        [(null? xs)(error "list-nth-mod: empty list")]
+        [#t (let ([i (remainder n (length xs))])
+              (car (list-tail xs i)))]))
+
+;;Q4
+;; stream * int -> 'a list
+;; produces a list of the first n values of stream s in order
+
+(define (stream-for-n-steps s n)
+  (cond [(= n 0) empty]
+        [#t (cons (car (s)) (stream-for-n-steps (cdr (s)) (- n 1)))]))
+
+;;Q5
+;; stream
+;; stream of natural numbers except number divisble by 5 are negated
+
+(define funny-number-stream
+  (letrec ([f (lambda (x)
+                (if (= 0 (remainder x 5))
+                    (cons (- 0 x) (lambda () (f (+ x 1))))
+                    (cons x (lambda () (f (+ x 1))))))])
+    (lambda () (f 1))))
+
+;;Q6
+;; stream
+;; stream of ("dan.jpg", thunk) where if the next thunk is called it produces a pair ("dog.jpg", thunk etc)
+
+(define dan-then-dog
+  (letrec ([f (lambda (x)
+                (if (string=? x "dan.jpg")
+                    (cons "dan.jpg" (lambda () (f "dog.jpg")))
+                    (cons "dog.jpg" (lambda () (f "dan.jpg")))))])
+    (lambda () (f "dan.jpg"))))
+
+;;Q7
+;; stream -> stream
+;; 
+
+(define (stream-add-zero s)
+  (lambda ()
+    (let ([pr (s)])
+      (cons (cons 0 (car pr)) (stream-add-zero (cdr pr))))))
+
+
+;;Q8
+;; 'a list * 'a list -> stream
+;; produces a stream of two lists where the elements are pairs from both lists
+
+(define (cycle-lists xs ys)
+  (letrec ([x-copy xs]
+           [y-copy ys]
+           [f (lambda (x y)
+                (cond
+                 [(and (null? x) (null? y) (cons (cons (car x-copy) (car y-copy)) (lambda () (f (cdr x-copy) (cdr y-copy)))))]
+                 [(null? x) (cons (cons (car x-copy) (car y)) (lambda () (f (cdr x-copy) (cdr y))))]
+                 [(null? y) (cons (cons (car x) (car y-copy)) (lambda () (f (cdr x) (cdr ys))))]
+                 [#t (cons (cons (car x) (car y)) (lambda () (f (cdr x) (cdr y))))]))])                
+    (lambda () (f xs ys))))
+
+;;Q9
+;; int * vector -> pair
+;; produces the pair for which the first elements is the same as the value v, #f otherwise
+
+(define (vector-assoc value vector)
+  (letrec
+      ([len (vector-length vector)]
+       [helper (lambda (vector len pos)
+          (cond
+            [(equal? pos len) #f]
+            [(not (pair? (vector-ref vector pos))) (helper vector len (+ 1 pos))]
+            [(equal? (car (vector-ref vector pos)) value) (vector-ref vector pos)]
+            [#t (helper vector len (+ 1 pos))]))])
+  (helper vector len 0)))
+
+;;Q10
+;; 'a list * int -> function
+
+(define (cached-assoc2 xs n)
+  (let ([memo (make-vector n #f)]
+           [slot 0])
+    (lambda (value)
+                (let ([ans (vector-assoc value memo)])
+                  (if ans
+                      (begin (print "took from memo") ans)
+                      (let ([ans2 (assoc value xs)])
+                        (if ans2
+                            (begin (vector-set! memo slot (assoc value xs)) (if (= (+ 1 slot) n) (set! slot 0) (set! slot (add1 slot))) (print "added to memo")
+                                   ans2)
+                            #f)))))))
+
+(define (cached-assoc xs n)
+  (letrec ([memo (make-vector n #f)]
+           [slot 0]
+           [helper (lambda (value)
+                (let ([ans (vector-assoc value memo)])
+                  (begin (print memo) (if ans
+                      (begin (print "took from memo") ans)
+                      (let ([ans2 (assoc value xs)])
+                        (if ans2
+                            (begin (vector-set! memo slot (assoc value xs)) (if (= (+ 1 slot) n) (set! slot 0) (set! slot (add1 slot))) (print "added to memo")
+                                   ans2)
+                            #f))))))])
+    helper))
+                 
+(define friend-list (list (cons "H" 1) (cons "A" 2) (cons "C" 3)))
+
+(define friend-search (cached-assoc friend-list 2))
+
+
+
+
+              
+                
