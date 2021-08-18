@@ -6,6 +6,9 @@ solutions
 solution
 *solution.rkt
 7. nand2tetris/tools/
+7. nand2tetris/projects/04/
+7. nand2tetris/projects/05/
+7. nand2tetris/projects/06/
 *out
 *cmp
 *tst
