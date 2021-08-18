@@ -5,3 +5,6 @@
 solutions
 solution
 *solution.rkt
+/tools/
+*out
+*cmp
