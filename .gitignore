@@ -5,7 +5,7 @@
 solutions
 solution
 *solution.rkt
-/tools/
+7. nand2tetris/tools/
 *out
 *cmp
 *tst
